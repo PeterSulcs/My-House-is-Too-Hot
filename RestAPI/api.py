@@ -1,9 +1,26 @@
 from flask import Flask
 from flask_restful import Resource, Api
 from flask_restful import reqparse
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-api = Api(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+api = SQLAlchemy(app)
+
+
+class Measurement(api.Model):
+    id = api.Column(api.Integer, primary_key=True)
+    sensor_name = api.Column(api.String(80))
+    value = api.Column(api.Float)
+    timestamp = api.Column(api.DateTime)
+
+    def __init__(self, sensor_name, timestamp, value):
+        self.sensor_name = sensor_name
+        self.timestamp = timestamp
+        self.value = value
+
+    def __repr__(self):
+        return '<Measurement %r>' % self.sensor_name
 
 class Sensor(Resource):
 
